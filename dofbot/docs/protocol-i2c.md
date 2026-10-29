@@ -28,7 +28,7 @@ Limitele nominale sunt 0–180°, respectiv 0–270° la S5; acestea nu sunt lim
 ## Citirea feedbackului
 
 1. `write_byte_data(0x15, 0x30 + id, 0)` solicită feedbackul; nu este o comandă de poziționare.
-2. Așteptare configurată de 10 ms.
+2. Așteptare configurată de 50 ms. Răspunsul brut zero este reîncercat de maximum trei ori, cu pauză de 50 ms între încercări, fără înlocuire cu o poziție presupusă.
 3. `read_word_data(0x15, 0x30 + id)`.
 4. Inversarea octeților rezultatului SMBus, apoi conversia inversă în grade și inversarea pentru S2–S4.
 
@@ -37,16 +37,18 @@ Valori brute în afara domeniului sunt erori. Nu se înlocuiesc cu un unghi impl
 ## Verificarea stării unui servo
 
 `write_byte_data(0x15, 0x38, id)`, pauză, `read_byte_data(0x15, 0x38)`.
-S1 a răspuns `0xDA`. Această verificare confirmă comunicația conform implementării consultate; nu confirmă starea cuplului sau siguranța poziției.
+Toate cele șase servouri au răspuns `0xDA`. Această verificare confirmă comunicația conform implementării consultate; nu confirmă starea cuplului sau siguranța poziției.
 
-## Cuplu — documentat, neexecutat
+## Cuplu — activare explicită după recuperarea fizică
 
 Distribuția consultată folosește `write_byte_data(0x15, 0x1A, 1)` pentru activare globală și valoarea 0 pentru dezactivare globală. Nu oferă în această interfață o activare individuală a cuplului sau o citire a stării cuplului.
 
-Aceste comenzi **nu au fost trimise**. Activarea poate mobiliza toate articulațiile, iar dezactivarea poate lăsa brațul să cadă. Nu sunt folosite pentru recuperarea automată după incident.
+După oprirea, repoziționarea și repornirea fizică de către operator, a fost autorizată explicit activarea globală. Toate unghiurile au fost citite de două ori pentru stabilitate, țintele au fost setate la unghiurile citite, apoi s-a așteptat durata pregătirii și s-a reverificat poziția. Abia apoi s-a trimis valoarea 1 la `0x1A`. Cuplul nu a fost dezactivat la ieșire. Secvența necesită explicit `--servo-test --enable-hold`.
+
+Activarea poate mobiliza toate articulațiile, iar dezactivarea poate lăsa brațul să cadă. Nu există recuperare automată din poziția căzută. Prima citire imediată după pregătire a returnat `raw=0`; procedura s-a oprit înainte de activare. Au fost adăugate temporizarea pregătirii și reîncercările limitate înaintea încercării reușite.
 
 ## Dovezi și limite
 
-I2C a răspuns; citirile tuturor celor șase servouri au furnizat valori în domeniu. Scrierea unei ținte mici la S1 nu a produs o deplasare confirmată. Prin urmare, protocolul de scriere nu este încă validat pe hardware-ul acestui montaj, iar cauza eșecului rămâne deschisă.
+I2C a răspuns, iar toate cele șase citiri au fost în domeniu. După activarea controlată a cuplului, testul S1 de la 93,03° la 95,03° a raportat 94,58°, iar revenirea la 93,03° a raportat 93,68°. Operatorul a confirmat rotația, revenirea și stabilitatea. Subsetul de scriere individuală și feedback este validat pentru acest test S1; nu extrapolăm la gripper sau trasee complete.
 
-Nu extrapolăm un test de comunicație la un control mecanic funcțional. Nu trimitem resetări, schimbări de ID, configurări de offset sau comenzi de cuplu pentru a încerca recuperarea fără verificare fizică.
+Nu extrapolăm un test de comunicație la un control mecanic complet funcțional. Nu trimitem resetări, schimbări de ID sau configurări de offset pentru recuperare. Cauza căderii raportate anterior rămâne necunoscută.

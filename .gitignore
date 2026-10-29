@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 .local/
 dofbot/artifacts/
+dofbot/.arm.lock
+dofbot/common/*.dry-run.json
+dofbot/common/*.json.bak

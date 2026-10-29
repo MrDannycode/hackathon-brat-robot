@@ -1,17 +1,56 @@
 {
-  "stage": "hardware_check",
+  "stage": "calibration_required",
   "arm": {
     "bus": 1,
     "address": 21,
-    "limits_deg": [[0, 180], [0, 180], [0, 180], [0, 180], [0, 270], [0, 180]],
+    "limits_deg": [
+      [
+        0,
+        180
+      ],
+      [
+        0,
+        180
+      ],
+      [
+        0,
+        180
+      ],
+      [
+        0,
+        180
+      ],
+      [
+        0,
+        270
+      ],
+      [
+        0,
+        180
+      ]
+    ],
     "protocol": {
       "write_register_base": 16,
       "read_register_base": 48,
       "read_request": 0,
-      "read_delay_s": 0.01,
-      "inverted_servos": [2, 3, 4],
-      "standard": {"degrees": 180, "raw_min": 900, "raw_max": 3100},
-      "servo5": {"degrees": 270, "raw_min": 380, "raw_max": 3700}
+      "read_delay_s": 0.05,
+      "read_attempts": 3,
+      "read_retry_s": 0.05,
+      "inverted_servos": [
+        2,
+        3,
+        4
+      ],
+      "standard": {
+        "degrees": 180,
+        "raw_min": 900,
+        "raw_max": 3100
+      },
+      "servo5": {
+        "degrees": 270,
+        "raw_min": 380,
+        "raw_max": 3700
+      }
     }
   },
   "servo_test": {
@@ -22,5 +61,485 @@
     "read_tolerance_deg": 0.75,
     "dry_run_start_deg": 90
   },
-  "calibration": {"complete": false, "home": null}
+  "diagnostics": {
+    "version_register": 1,
+    "version_request": 1,
+    "ping_register": 56,
+    "request_delay_s": 0.02,
+    "sample_count": 3,
+    "sample_interval_s": 0.5
+  },
+  "hold_initialization": {
+    "torque_register": 26,
+    "torque_on_value": 1,
+    "duration_ms": 3000,
+    "command_gap_s": 0.02,
+    "settle_s": 0.5,
+    "max_pose_drift_deg": 0.75,
+    "dry_run_angles": [
+      90,
+      90,
+      90,
+      90,
+      90,
+      90
+    ]
+  },
+  "calibration": {
+    "complete": false,
+    "simulated": false
+  },
+  "simulation": {
+    "initial_angles": [
+      90,
+      90,
+      90,
+      90,
+      90,
+      90
+    ]
+  },
+  "motion": {
+    "max_speed_deg_s": 10,
+    "minimum_duration_ms": 1200,
+    "tick_ms": 300,
+    "command_gap_s": 0.02,
+    "settle_s": 0.2,
+    "command_epsilon_deg": 0.04,
+    "feedback_tolerance_deg": 1.0,
+    "uncommanded_drift_deg": 2.0,
+    "manual_max_step_deg": 2.0
+  },
+  "safety": {
+    "recovery_enabled": false
+  },
+  "gripper": {
+    "servo_id": 6,
+    "open_deg": null,
+    "closed_deg": null
+  },
+  "poses": {
+    "home": null,
+    "transit": null,
+    "view_source": null,
+    "view_destination": null
+  },
+  "cells": {
+    "source": {
+      "1,1": {
+        "approach": null,
+        "contact": null
+      },
+      "1,2": {
+        "approach": null,
+        "contact": null
+      },
+      "1,3": {
+        "approach": null,
+        "contact": null
+      },
+      "2,1": {
+        "approach": null,
+        "contact": null
+      },
+      "2,2": {
+        "approach": null,
+        "contact": null
+      },
+      "2,3": {
+        "approach": null,
+        "contact": null
+      },
+      "3,1": {
+        "approach": null,
+        "contact": null
+      },
+      "3,2": {
+        "approach": null,
+        "contact": null
+      },
+      "3,3": {
+        "approach": null,
+        "contact": null
+      }
+    },
+    "destination": {
+      "1,1": {
+        "approach": null,
+        "contact": null
+      },
+      "1,2": {
+        "approach": null,
+        "contact": null
+      },
+      "1,3": {
+        "approach": null,
+        "contact": null
+      },
+      "2,1": {
+        "approach": null,
+        "contact": null
+      },
+      "2,2": {
+        "approach": null,
+        "contact": null
+      },
+      "2,3": {
+        "approach": null,
+        "contact": null
+      },
+      "3,1": {
+        "approach": null,
+        "contact": null
+      },
+      "3,2": {
+        "approach": null,
+        "contact": null
+      },
+      "3,3": {
+        "approach": null,
+        "contact": null
+      }
+    }
+  },
+  "tower": {
+    "cube_height_mm": null,
+    "level_heights_mm": [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "targets": {
+      "1,1": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "1,2": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "1,3": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "2,1": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "2,2": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "2,3": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "3,1": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "3,2": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      },
+      "3,3": {
+        "1": {
+          "approach": null,
+          "contact": null
+        },
+        "2": {
+          "approach": null,
+          "contact": null
+        },
+        "3": {
+          "approach": null,
+          "contact": null
+        },
+        "4": {
+          "approach": null,
+          "contact": null
+        },
+        "5": {
+          "approach": null,
+          "contact": null
+        }
+      }
+    }
+  },
+  "camera": {
+    "backend": "auto",
+    "device": "/dev/video0",
+    "csi_index": 0,
+    "width": 640,
+    "height": 480,
+    "fps": 30,
+    "buffer_size": 1,
+    "flush_frames": 6,
+    "warmup_s": 1.0,
+    "usb_controls": {
+      "power_line_frequency": 1
+    },
+    "usb_fixed_controls": {
+      "exposure_auto": 1,
+      "white_balance_temperature_auto": 0
+    },
+    "require_fixed_controls": false,
+    "csi_controls": {
+      "AeEnable": false,
+      "AwbEnable": false,
+      "ExposureTime": 10000,
+      "AnalogueGain": 1.0,
+      "ColourGains": [
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "grids": {
+    "source": {
+      "rows": 3,
+      "cols": 3,
+      "corners_px": null
+    },
+    "destination": {
+      "rows": 3,
+      "cols": 3,
+      "corners_px": null
+    }
+  },
+  "vision": {
+    "hsv": {
+      "red": [
+        {
+          "lower": [
+            0,
+            80,
+            50
+          ],
+          "upper": [
+            10,
+            255,
+            255
+          ]
+        },
+        {
+          "lower": [
+            170,
+            80,
+            50
+          ],
+          "upper": [
+            179,
+            255,
+            255
+          ]
+        }
+      ],
+      "yellow": [
+        {
+          "lower": [
+            18,
+            80,
+            50
+          ],
+          "upper": [
+            38,
+            255,
+            255
+          ]
+        }
+      ],
+      "green": [
+        {
+          "lower": [
+            39,
+            60,
+            40
+          ],
+          "upper": [
+            85,
+            255,
+            255
+          ]
+        }
+      ],
+      "blue": [
+        {
+          "lower": [
+            90,
+            70,
+            40
+          ],
+          "upper": [
+            130,
+            255,
+            255
+          ]
+        }
+      ]
+    },
+    "validated_on_real_images": false,
+    "minimum_grid_area_px": 2000
+  },
+  "competition": {
+    "time_limit_s": 300,
+    "warning_s": 240,
+    "max_retries": 2,
+    "task2_default_order": [
+      "red",
+      "yellow",
+      "blue",
+      "green"
+    ],
+    "task2_default_target": [
+      2,
+      3
+    ]
+  }
 }
