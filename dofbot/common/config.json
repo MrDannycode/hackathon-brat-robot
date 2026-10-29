@@ -1,0 +1,26 @@
+{
+  "stage": "hardware_check",
+  "arm": {
+    "bus": 1,
+    "address": 21,
+    "limits_deg": [[0, 180], [0, 180], [0, 180], [0, 180], [0, 270], [0, 180]],
+    "protocol": {
+      "write_register_base": 16,
+      "read_register_base": 48,
+      "read_request": 0,
+      "read_delay_s": 0.01,
+      "inverted_servos": [2, 3, 4],
+      "standard": {"degrees": 180, "raw_min": 900, "raw_max": 3100},
+      "servo5": {"degrees": 270, "raw_min": 380, "raw_max": 3700}
+    }
+  },
+  "servo_test": {
+    "servo_id": 1,
+    "delta_deg": 2,
+    "duration_ms": 2000,
+    "settle_s": 0.5,
+    "read_tolerance_deg": 0.75,
+    "dry_run_start_deg": 90
+  },
+  "calibration": {"complete": false, "home": null}
+}
