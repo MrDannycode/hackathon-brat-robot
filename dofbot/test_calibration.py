@@ -51,7 +51,7 @@ class CalibrationTests(unittest.TestCase):
 
     def test_manual_large_step_rejected(self):
         with self.assertRaises(ValueError):
-            self.arm.move_servo(1, 110, manual=True)
+            self.arm.move_servo(1, 90 + self.config['motion']['manual_max_step_deg'] + 1, manual=True)
         self.assertEqual(self.arm.read()[0], 90)
 
     def test_simulated_pick_place_finishes_above_grid_with_open_gripper(self):

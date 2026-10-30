@@ -17,7 +17,7 @@ from common.settings import DEFAULT_CONFIG, load_config, save_config
 LOG = logging.getLogger('calibrate')
 HELP = '''
 read                               unghiuri curente S1..S6
-j ID UNGHI                         miscare manuala, pas maxim din config (2 grade)
+j ID UNGHI                         miscare manuala, pas maxim din config
 limit ID MIN MAX                   limite conservative; NU executa miscare
 save home|transit|view_source|view_destination
 save source|destination RAND,COL approach|contact

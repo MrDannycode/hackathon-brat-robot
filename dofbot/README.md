@@ -1,5 +1,10 @@
 # Dofbot — Roboți Industriali
 
+Actualizare etapa 3: `common/vision.py` si `vision_check.py` detecteaza cele patru
+culori in doua fotografii reale pe Pi. Geometria fetelor este provizorie si
+asteapta un aranjament independent; nu exista inca miscare autonoma validata.
+Vezi [rezultate si limite](docs/vision-stage3.md).
+
 Proiect incremental pentru Raspberry Pi 4, Debian Trixie, Python 3.13.
 **Etapa curentă: calibrare fizică.** Nu există încă probe autonome validate.
 
@@ -55,7 +60,7 @@ Conectarea și `read` nu comandă mișcare și nu schimbă cuplul. Meniul și di
 ## Calibrare, în ordine
 
 1. Fixează brațul și grilele, cu zona liberă și acces la întrerupător. Nu opri alimentarea unui braț nesusținut și nu forța articulațiile alimentate. După repornire nu presupune că există cuplu: meniul nu îl activează. Cere reluarea inițializării controlate dacă brațul nu menține poziția.
-2. `read` afișează S1 baza, S2 umărul, S3 cotul, S4 înclinarea încheieturii, S5 rotația încheieturii, S6 gripperul. `j ID UNGHI` primește un unghi absolut numeric, la maximum 2° de citirea curentă. La primul test al unui servo netestat folosește circa 1° și observă sensul. Nu copia unghiurile de simulare pe hardware.
+2. `read` afișează S1 baza, S2 umărul, S3 cotul, S4 înclinarea încheieturii, S5 rotația încheieturii, S6 gripperul. `j ID UNGHI` primește un unghi absolut numeric, la maximum 60° de citirea curentă. La primul test al unui servo netestat folosește circa 1° și observă sensul. Nu copia unghiurile de simulare pe hardware.
 3. `limit ID MIN MAX` salvează limite conservative, fără mișcare. Limitele inițiale sunt nominale, nu mecanice validate. Nu explora automat extremele.
 4. Construiește gradual o poziție sigură și salvează `save home`. Salvează separat `save transit`, deasupra obstacolelor. Verifică fizic traseele, nu doar capetele. `goto NUME` trece prin `transit`; nu există încă planificator de coliziuni.
 5. Reglează gradual S6: `grip open` salvează citirea curentă la deschiderea suficientă; `grip closed` la prinderea blândă a cubului. Aceste comenzi salvează fără mișcare. Ulterior `open`/`close` execută unghiurile salvate. Evită strângerea forțată.

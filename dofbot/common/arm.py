@@ -26,8 +26,25 @@ class Arm:
             value = settings[name]
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
                 raise ValueError(f'Parametru de miscare invalid: {name}')
-        if settings['manual_max_step_deg'] > 5:
-            raise ValueError('Pasul manual nu poate depasi 5 grade.')
+        if settings['manual_max_step_deg'] > 60:
+            raise ValueError('Pasul manual nu poate depasi 60 grade.')
+        correction = settings.get('s3_correction', {})
+        if correction.get('enabled'):
+            for name in ('max_adjustment_deg', 'duration_ms', 'stability_tolerance_deg',
+                         'stability_wait_s', 'min_move_deg', 'max_move_deg'):
+                value = correction[name]
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+                    raise ValueError(f'Parametru corectie invalid: {name}')
+            if (correction['max_adjustment_deg'] > 2 or
+                    not isinstance(correction['duration_ms'], int) or
+                    not 3000 <= correction['duration_ms'] <= 65535 or
+                    not correction['min_move_deg'] <= correction['max_move_deg'] <= 5.1):
+                raise ValueError('Corectia S3 depaseste domeniul testat.')
+            low, high = correction['target_range_deg']
+            encode_angle(config, 3, low)
+            encode_angle(config, 3, high)
+            if low >= high:
+                raise ValueError('Domeniu corectie S3 invalid.')
         self.current = list(config['simulation']['initial_angles'])
         if config['calibration'].get('simulated') and not dry_run:
             raise ValueError('Config simulata: utilizarea pe hardware este interzisa.')
@@ -102,12 +119,56 @@ class Arm:
         else:
             time.sleep(settings['settle_s'])
             measured = self.read()
-            for servo_id in range(1, 7):
-                expected = targets.get(servo_id, before[servo_id - 1])
-                tolerance = (settings['feedback_tolerance_deg'] if servo_id in targets
-                             else settings['uncommanded_drift_deg'])
-                if abs(measured[servo_id - 1] - expected) > tolerance:
-                    raise RuntimeError(f'S{servo_id}: feedback {measured[servo_id - 1]:.2f}, asteptat {expected:.2f}; miscare oprita.')
+            failures = self._feedback_failures(before, targets, measured)
+            if failures:
+                measured = self._correct_s3(before, targets, measured, failures)
+            self._require_feedback(before, targets, measured)
+
+    def _feedback_failures(self, before, targets, measured):
+        settings = self.config['motion']
+        return [servo_id for servo_id in range(1, 7)
+                if abs(measured[servo_id - 1] - targets.get(servo_id, before[servo_id - 1])) >
+                settings['feedback_tolerance_deg' if servo_id in targets else 'uncommanded_drift_deg']]
+
+    def _require_feedback(self, before, targets, measured):
+        failures = self._feedback_failures(before, targets, measured)
+        if failures:
+            servo_id = failures[0]
+            expected = targets.get(servo_id, before[servo_id - 1])
+            raise RuntimeError(f'S{servo_id}: feedback {measured[servo_id - 1]:.2f}, asteptat {expected:.2f}; miscare oprita.')
+
+    def _correct_s3(self, before, targets, measured, failures):
+        """One bounded correction, only in the physically tested S3 lifting range."""
+        correction = self.config['motion'].get('s3_correction', {})
+        if not correction.get('enabled') or failures != [3] or 3 not in targets:
+            return measured
+        target = targets[3]
+        low, high = correction['target_range_deg']
+        delta = target - before[2]
+        error = target - measured[2]
+        if not (low <= before[2] <= high and low <= target <= high and
+                correction['min_move_deg'] <= delta <= correction['max_move_deg'] and
+                0 < error <= correction['max_adjustment_deg']):
+            return measured
+        time.sleep(correction['stability_wait_s'])
+        stable = self.read()
+        # Reject drift or unstable feedback before sending any corrective command.
+        if (any(abs(a - b) > correction['stability_tolerance_deg'] for a, b in zip(measured, stable)) or
+                self._feedback_failures(before, targets, stable) != [3]):
+            raise RuntimeError('Feedback instabil sau deriva; corectia S3 refuzata.')
+        error = target - stable[2]
+        if not 0 < error <= correction['max_adjustment_deg']:
+            return stable
+        command = target + error
+        encode_angle(self.config, 3, command)
+        duration = max(correction['duration_ms'], math.ceil(
+            1500 * abs(command - stable[2]) / self.config['motion']['max_speed_deg_s']))
+        if duration > 65535:
+            raise ValueError('Durata corectiei depaseste protocolul.')
+        LOG.warning('O singura corectie S3: tinta fizica %.2f, comanda %.2f', target, command)
+        write_angle(self.bus, self.config, 3, command, duration)
+        time.sleep(duration / 1000 + self.config['motion']['settle_s'])
+        return self.read()
 
     def move_servo(self, servo_id, angle, *, manual=False):
         encode_angle(self.config, servo_id, angle)

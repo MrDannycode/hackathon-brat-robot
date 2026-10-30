@@ -101,14 +101,24 @@
   },
   "motion": {
     "max_speed_deg_s": 10,
-    "minimum_duration_ms": 1200,
+    "minimum_duration_ms": 3000,
     "tick_ms": 300,
     "command_gap_s": 0.02,
     "settle_s": 0.2,
     "command_epsilon_deg": 0.04,
     "feedback_tolerance_deg": 1.0,
     "uncommanded_drift_deg": 2.0,
-    "manual_max_step_deg": 2.0
+    "manual_max_step_deg": 60.0,
+    "s3_correction": {
+      "enabled": true,
+      "max_adjustment_deg": 2.0,
+      "duration_ms": 3000,
+      "stability_tolerance_deg": 0.5,
+      "stability_wait_s": 0.5,
+      "min_move_deg": 3.0,
+      "max_move_deg": 5.1,
+      "target_range_deg": [26.0, 32.0]
+    }
   },
   "safety": {
     "recovery_enabled": false
@@ -454,6 +464,14 @@
     }
   },
   "vision": {
+    "detector": {
+      "morphology_kernel_px": 3,
+      "min_area_fraction": 0.015,
+      "max_area_fraction": 0.15,
+      "min_fill_fraction": 0.45,
+      "image_border_margin_px": 1,
+      "cell_boundary_margin": 0.12
+    },
     "hsv": {
       "red": [
         {
